@@ -49,6 +49,7 @@ static int process_ipv6(unsigned char* buf, int len);
 
 static int process_rth(unsigned char* buf, int len);
 static void process_rth_flags(unsigned char* buf, int len, uint32_t flags);
+static int process_ieee80211(unsigned char* buf, int len);
 
 static void process_ppp(unsigned char*buf, int len);
 static void process_ppp_hdlc(unsigned char*buf, int len);
@@ -627,6 +628,8 @@ static void process_rth_flags(unsigned char* buf, int len, uint32_t flags) {
    temp.ven_ns           = GET_BIT(flags, 30); /* Bit 30 */
    temp.ext              = GET_BIT(flags, 31); /* Bit 31 */ 
 
+   /* TODO Print out fields that matter (If any) */
+
    /* Check if there is another ext header */
    if (temp.ext) {
       uint32_t next_flag = get_next_word(&buf[r_bytes]);   
@@ -667,8 +670,24 @@ static int process_rth(unsigned char* buf, int len) {
    process_rth_flags(&buf[RTH_SIZE], rth->it_len - RTH_SIZE, fields_present); /* Passing buffer at point where another extension header where exist pass the first (Not well worded) */
 
    r_bytes += rth->it_len - RTH_SIZE;
+   len -= r_bytes;
 
-   /* TODO Process the 802.11 header that follows */
+   /* Process the 802.11 header that follows */
+   
+   return r_bytes;
+}
+
+static int process_ieee80211(unsigned char* buf, int len) { 
+   ieee80211_t* frame = (ieee80211_t*)buf; /* Overlay the buffer */
+   int r_bytes = 0;
+
+   if (IEEE80211_T_SIZE > len) return 0; /* Bottom out if we lack sufficient bytes */
+   
+   /* Extract frame type + subtype fields */
+
+   /* Process according to type and subtype */
+
+
    return r_bytes;
 }
 

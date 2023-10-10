@@ -516,6 +516,78 @@ typedef struct {
 } __attribute__ ((packed)) rth_flags_t;
 #define RTH_FLAG_WORD 4 
 
+
+/**
+ *  ieee80211_t
+ * 
+ * IEEE 802.11 frame header structure
+*/
+typedef struct { 
+	uint16_t f_ctrl;           /* Frame control field */
+	uint16_t dur;              /* Duration / iD */
+	uint8_t  d_addr[MAC_SIZE]; /* Destination mac address */
+	uint8_t  s_addr[MAC_SIZE]; /* Source mac address */
+	uint8_t  bssid[MAC_SIZE];  /* Basic service set ID */
+	uint16_t s_ctrl;           /* Sequence control : Fragment number & 0xf <> Seq number & 0xfff0*/
+} __attribute__ ((packed)) ieee80211_t;
+#define IEEE80211_T_SIZE sizeof(ieee80211_t)
+
+/* Reference for everything about frames and whatnot 
+ * https://howiwifi.com/2020/07/13/802-11-frame-types-and-formats/
+ */
+
+/** 802.11 Frame types */
+#define FRAME_MANAGE  0 /* Indicates a management frame type */
+#define FRAME_CONTROL 1 /* Indicates a control frame type */
+#define FRAME_DATA    2 /* Indicates a data frame type */
+
+/** 802.11 Management frames */
+#define MAN_ARQ   0b0000	/* Association request */
+#define MAN_RRQ   0b0010	/* Reassociation request */
+#define MAN_PRQ   0b0100	/* Probe request */
+#define MAN_TA    0b0110	/* Timing advertisement */
+#define MAN_BEA   0b1000	/* Beacon */
+#define MAN_DSA   0b1010	/* Disassociation */
+#define MAN_DAUTH 0b1100	/* Deauthentication */
+#define MAN_AUTH  0b1011	/* Authentication */
+#define MAN_ACT   0b1110	/* Action */
+#define MAN_ARSP  0b0001	/* Association response */
+#define MAN_RRSP  0b0011	/* Reassociation response */
+#define MAN_PRSP  0b0101	/* Probe response */
+#define MAN_RES   0b0111	/* Reserved */
+
+/** 802.11 Control Frames */
+#define CTRL_BRP  0b0100	/* Beamforming Report Poll */
+#define CTRL_NDP  0b0101	/* VHT/HE NDP Announcement */
+#define CTRL_CFE  0b0110	/* Control Frame Extension */
+#define CTRL_CW   0b0111	/* Control wrapper */
+#define CTRL_BAR  0b1000	/* Block ACK Request */
+#define CTRL_BA   0b1001	/* Block ACK */
+#define CTRL_PP   0b1010	/* PS-Poll */
+#define CTRL_RTS  0b1011	/* RTS */
+#define CTRL_CTS  0b1100	/* CTS */
+#define CTRL_ACK  0b1101	/* ACK */
+#define CTRL_CFE  0b1110	/* CF-End */
+#define CTRL_CFEA 0b1111	/* CF-END+CF-ACK */
+
+/** 802.11 Data frames */
+#define DATA_D      0b0000	/* Data */
+#define DATA_DACK   0b0001	/* Data + CF-ACK */
+#define DATA_DPOLL  0b0010	/* Data + CF-Poll */
+#define DATA_DACKP  0b0011	/* Data + CF-ACK + CF-Poll */
+#define DATA_NULL   0b0100	/* Null (no data) */
+#define DATA_CFACK  0b0101	/* CF-ACK (no data) */
+#define DATA_CFPOLL 0b0110	/* CF-Poll (no data) */
+#define DATA_CFACKP 0b0111	/* CF-ACK + CF-Poll (no data) */
+#define DATA_QD     0b1000	/* QoS Data */
+#define DATA_QDACK  0b1001	/* QoS Data + CF-ACK */
+#define DATA_QDPOLL 0b1010	/* QoS Data + CF-Poll */
+#define DATA_QDACKP 0b1011	/* QoS Data + CF-ACK + CF-Poll */
+#define DATA_QNULL  0b1100	/* QoS Null (no data) */
+#define DATA_RES    0b1101	/* Reserved */
+#define DATA_QPOLL  0b1110	/* QoS CF-Poll (no data) */
+#define DATA_QACKP  0b1111	/* QoS CF-ACK + CF-Poll (no data) */
+
 /**
  * ppp_t
  *
