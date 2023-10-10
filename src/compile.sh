@@ -6,7 +6,7 @@ OPT="-O2"
 DBG="-ggdb3 -DDEBUG"
 BAKAPIDIR="../bak_api"
 CFLAGS="-Wall"
-CFLAGS+=" -I${BAKAPIDIR}"
+CFLAGS+=" -I${BAKAPIDIR} "
 OPTCFLAGS="${CFLAGS} ${OPT}"
 DBGCFLAGS="${CFLAGS} ${DBG}"
 
@@ -26,6 +26,9 @@ gcc ${DBGCFLAGS} pcap2zmq.c ${BAKAPIDIR}/{getopts,async_zmq_pub}.c -lpthread -lp
 
 gcc ${OPTCFLAGS} pkt_recv.c output.c ${BAKAPIDIR}/{getopts,async_zmq_sub}.c -lpthread -lzmq -o pkt_writer.exe
 gcc ${DBGCFLAGS} pkt_recv.c output.c ${BAKAPIDIR}/{getopts,async_zmq_sub}.c -lpthread -lzmq -o pkt_writer.dbg
+
+gcc ${OPTCFLAGS} pkt_recv.c manual_dissection.c ${BAKAPIDIR}/{getopts,async_zmq_sub}.c -lpthread -lzmq -o manual_dissection.exe
+gcc ${DBGCFLAGS} pkt_recv.c manual_dissection.c ${BAKAPIDIR}/{getopts,async_zmq_sub}.c -lpthread -lzmq -o manual_dissection.dbg
 
 gcc ${OPTCFLAGS} pkt_recv.c analysis_example.c ${BAKAPIDIR}/{getopts,async_zmq_sub}.c -lpthread -lzmq -o analysis_example.exe
 gcc ${DBGCFLAGS} pkt_recv.c analysis_example.c ${BAKAPIDIR}/{getopts,async_zmq_sub}.c -lpthread -lzmq -o analysis_example.dbg

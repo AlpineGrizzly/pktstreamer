@@ -1,0 +1,2 @@
+./manual_dissection.dbg -Z ipc:///tmp/pcap.ipc
+while [ true ]; do ./pump_pkts.sh; done:
