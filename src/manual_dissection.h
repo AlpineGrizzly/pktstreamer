@@ -483,54 +483,55 @@ typedef struct
 #define GET_BIT(flag, pos) flag >> pos & 0x1 
 
 typedef struct { 
-	uint8_t tsft;             /* Specifies if the Time synchronization Function time field is present */
-	uint8_t flags;            /* Specifies if the channel flags field is present */
-	uint8_t rate;             /* Specifies if the transmit/receive field is present */
-	uint8_t channel;          /* Specifies if the transmit/receive freq field is present */
-	uint8_t fhss;             /* Specifies if he hop set an pattern is present for frequency hopping radios */
-	uint8_t dbm_ant_sig;      /* Specifies if the antenna signal strength in dBm is present */
-	uint8_t dbm_ant_ns;       /* Specifies if the RF noise power at antenna field is present */
-	uint8_t lock_q;           /* Specifies if the signal quality field is present */
-	uint8_t tx_ant;           /* Specifies if the transmit power distance from max power field is present */
-	uint8_t db_tx_ant;        /* Specifies if the power distance from max power (in dB) field is present */
-	uint8_t db_m_tx_pow;      /* Specifies if the transmit power (in dBm) field is present */
-	uint8_t ant;              /* Specifies if the antenna number field is present */
-	uint8_t db_antsignal;     /* Specifies if the RF signal power at antenna in dB field is present */	
-	uint8_t db_antnoise;      /* Specifies if the RF signal power at antenna in dBm field is present */
-	uint8_t rx_flags;         /* Specifes if the RX flags field is present */
-	uint8_t tx_flags;         /* Specifes if the TX flags field is present */
-	uint8_t data_retries;     /* Specifies if the data retries field is present */
-	uint8_t present_xchannel; /* Specifies if te extended channel info field is present */	
-	uint8_t mcs;              /* ... mcs field is present */
-	uint8_t ampdu;            /* ... A-MPDU status field is present */
-	uint8_t vht;              /* .... */
-	uint8_t frame_ts; 
-	uint8_t heinfo;
-	uint8_t hemuinfo;
-	uint8_t psdu;             /* Specifies whether or not the 0-Length PSDU field is present */
-	uint8_t l_sig;
-	uint8_t tlvs; 
-	uint8_t rt_ns;            /* Specifies a reset to the radiotap namespace */
-	uint8_t ven_ns;           /* ... the next bitmap is in a vendor namespace */
-	uint8_t ext;              /* Specifies if there are any extensions to the header present (Believe a boolean on this to recurse through present headers is the approach ) */
+	uint8_t tsft;             /* [Bit  0] Time synchronization Function time field is present */
+	uint8_t flags;            /* [Bit  1] Channel flags field is present */
+	uint8_t rate;             /* [Bit  2]transmit/receive field is present */
+	uint8_t channel;          /* [Bit  3] transmit/receive freq field is present */
+	uint8_t fhss;             /* [Bit  4] hop set an pattern is present for frequency hopping radios */
+	uint8_t dbm_ant_sig;      /* [Bit  5] antenna signal strength in dBm is present */
+	uint8_t dbm_ant_ns;       /* [Bit  6] RF noise power at antenna field is present */
+	uint8_t lock_q;           /* [Bit  7] signal quality field is present */
+	uint8_t tx_ant;           /* [Bit  8] transmit power distance from max power field is present */
+	uint8_t db_tx_ant;        /* [Bit  9] power distance from max power (in dB) field is present */
+	uint8_t db_m_tx_pow;      /* [Bit 10] transmit power (in dBm) field is present */
+	uint8_t ant;              /* [Bit 11] antenna number field is present */
+	uint8_t db_antsignal;     /* [Bit 12] RF signal power at antenna in dB field is present */	
+	uint8_t db_antnoise;      /* [Bit 13] RF signal power at antenna in dBm field is present */
+	uint8_t rx_flags;         /* [Bit 14] RX flags field is present */
+	uint8_t tx_flags;         /* [Bit 15] TX flags field is present */
+	/* Bit 16 skipped */
+	uint8_t data_retries;     /* [Bit 17] data retries field is present */
+	uint8_t present_xchannel; /* [Bit 18] extended channel info field is present */	
+	uint8_t mcs;              /* [Bit 19] mcs field is present */
+	uint8_t ampdu;            /* [Bit 20] A-MPDU status field is present */
+	uint8_t vht;              /* [Bit 21] */
+	uint8_t frame_ts;         /* [Bit 22] */
+	uint8_t heinfo;           /* [Bit 23] */
+	uint8_t hemuinfo;         /* [Bit 24] */
+	/* Bit 25 skipped */
+	uint8_t psdu;             /* [Bit 26] 0-Length PSDU field is present */
+	uint8_t l_sig;            /* [Bit 27] */
+	uint8_t tlvs;             /* [Bit 28] */
+	uint8_t rt_ns;            /* [Bit 29] Specifies a reset to the radiotap namespace */
+	uint8_t ven_ns;           /* [Bit 30] next bitmap is in a vendor namespace */
+	uint8_t ext;              /* [Bit 31] Specifies if there are any extensions to the header present */
 } __attribute__ ((packed)) rth_flags_t;
 #define RTH_FLAG_WORD 4 
 
-
 /**
- *  ieee80211_t
+ *  mngmt_mac_t
  * 
- * IEEE 802.11 frame header structure
+ * IEEE 802.11 Mac header structure for Management frames
 */
 typedef struct { 
-	uint16_t f_ctrl;           /* Frame control field */
-	uint16_t dur;              /* Duration / iD */
+	uint16_t frame_ctrl;       /* Frame control field */
+	uint16_t dur;              /* Duration (In microseconds) */
 	uint8_t  d_addr[MAC_SIZE]; /* Destination mac address */
 	uint8_t  s_addr[MAC_SIZE]; /* Source mac address */
 	uint8_t  bssid[MAC_SIZE];  /* Basic service set ID */
 	uint16_t s_ctrl;           /* Sequence control : Fragment number & 0xf <> Seq number & 0xfff0*/
-} __attribute__ ((packed)) ieee80211_t;
-#define IEEE80211_T_SIZE sizeof(ieee80211_t)
+} __attribute__ ((packed)) mngmt_mac_t;
+#define MNGMT_MAC_H_SIZE sizeof(mngmt_mac_t)
 
 /* Reference for everything about frames and whatnot 
  * https://howiwifi.com/2020/07/13/802-11-frame-types-and-formats/

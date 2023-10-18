@@ -673,21 +673,127 @@ static int process_rth(unsigned char* buf, int len) {
    len -= r_bytes;
 
    /* Process the 802.11 header that follows */
-   
+   r_bytes += process_ieee80211(&buf[r_bytes], len); 
    return r_bytes;
 }
 
-static int process_ieee80211(unsigned char* buf, int len) { 
-   ieee80211_t* frame = (ieee80211_t*)buf; /* Overlay the buffer */
+static int process_manageframe(unsigned char* buf, int len, uint8_t subtype) { 
+   mngmt_mac_t* m_frame = (mngmt_mac_t*)buf; /* Overlay mac header on buffer */
    int r_bytes = 0;
 
-   if (IEEE80211_T_SIZE > len) return 0; /* Bottom out if we lack sufficient bytes */
+   /* Extract mac header fields */
+   uint8_t frag_num = m_frame->s_ctrl & 0x0f; // Fragment number .... .... .... 0000 
+   uint16_t seq_num = m_frame->s_ctrl >> 4;   // Sequence Number 0000 0000 0000 ....
+
+   /** Print fields */
+   printf("%d ", m_frame->dur);
+   print_mac(m_frame->d_addr);
+   print_mac(m_frame->s_addr);
+   print_mac(m_frame->bssid);
+   printf("%d %d ", frag_num, seq_num);
+
+   /* Track da Mac */
+   len -= MNGMT_MAC_H_SIZE; 
+   r_bytes += MNGMT_MAC_H_SIZE;
+
+   /** Process subtype frame body */   
+   printf("MNGMT_");
+   switch(subtype) { 
+      case MAN_ARQ:
+         printf("ASS_REQ ");
+         break;    
+      case MAN_RRQ:
+         printf("REASS_REQ ");
+         break;    
+      case MAN_PRQ:
+         printf("PROBE_REQ ");
+         break;    
+      case MAN_TA:
+         printf("TIME_ADV ");
+         break;     
+      case MAN_BEA:
+         printf("BEACON ");
+         break; 
+      case MAN_DSA:
+         printf("DISS_ASS ");
+         break; 
+      case MAN_DAUTH:
+         printf("DEAUTH ");
+         break;
+      case MAN_AUTH:
+         printf("AUTH ");
+         break;
+      case MAN_ACT:
+         printf("ACTION ");
+         break; 
+      case MAN_ARSP:
+         printf("ASS_RESP ");
+         break;   
+      case MAN_RRSP:
+         printf("REASS_RESP ");
+         break;   
+      case MAN_PRSP:
+         printf("PROBE_RESP ");
+         break;   
+      case MAN_RES:
+         printf("RES ");
+         break; 
+   }
+   return r_bytes;
+}
+
+static int process_ctrlframe(unsigned char* buf, int len, int subtype) { 
+   int r_bytes = 0;
+   printf("CTRL_");
+   return 0;
+}
+
+static int process_dataframe(unsigned char* buf, int len, int subtype) {
+   int r_bytes = 0;
+   printf("DATA_");
+   return 0;
+}
+
+static int process_ieee80211(unsigned char* buf, int len) { 
+   uint16_t ctrl_field; /* Used to hold host endianess 16 bit Frame control field */
+   int r_bytes = 0;
+
+   printf("FRAME_80211 ");
+   
+   if (sizeof(ctrl_field) > len) return 0; /* Bottom out if we lack sufficient bytes to get type information */
+
+   ctrl_field = H_16( (uint16_t)buf[1] << 8 | buf[0] ); /* Get the frame control field */
    
    /* Extract frame type + subtype fields */
+   /** First byte are flags */
+   uint8_t flags   = ctrl_field & 0xff;    
+   /** Second byte are vers, type, subtype */
+   uint8_t vers    = ctrl_field >> 8  & 0x3;  /* .... ..00 */   
+   uint8_t type    = ctrl_field >> 8  & 0xc;  /* .... 00.. */ 
+   uint8_t subtype = ctrl_field >> 12 & 0xf;  /* 0000 .... */
+    
+   printf("%d %d %d %X ", vers, type, subtype, flags);
+
+   len -= sizeof(ctrl_field);
 
    /* Process according to type and subtype */
-
-
+   /** Process by type */
+   switch(type) { 
+      case FRAME_MANAGE:
+         r_bytes += process_manageframe(buf, len, subtype);
+         break;
+      case FRAME_CONTROL:
+         r_bytes += process_ctrlframe(&buf[r_bytes], len, subtype);
+         break;
+      case FRAME_DATA:
+         r_bytes += process_dataframe(&buf[r_bytes], len, subtype);
+         break;
+#ifdef DEBUG
+      default:
+         printf("UNKNWN_ST %d ", type);
+#endif
+   }
+   
    return r_bytes;
 }
 
